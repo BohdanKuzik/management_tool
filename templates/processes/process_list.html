@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Browser</title>
+</head>
+<body>
+    <h1>Active Processes</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Start Time</th>
+                <th>Memory Usage (MB)</th>
+                <th>CPU Usage (%)</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for process in processes %}
+            <tr>
+                <td>{{ process.pid }}</td>
+                <td>{{ process.name }}</td>
+                <td>{{ process.status }}</td>
+                <td>{{ process.start_time }}</td>
+                <td>{{ process.memory_usage }}</td>
+                <td>{{ process.cpu_usage }}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
