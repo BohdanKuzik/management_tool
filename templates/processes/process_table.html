@@ -18,6 +18,12 @@
             <td>{{ process.name }}</td>
             <td>{{ process.memory_usage }}</td>
             <td>{{ process.cpu_usage }}</td>
+            <td>
+                <form action="{% url 'processes:kill_process' pid=process.pid %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Kill Process</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

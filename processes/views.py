@@ -2,6 +2,8 @@ import psutil
 import logging
 from django.utils import timezone
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 logger = logging.getLogger(__name__)
@@ -42,3 +44,13 @@ def process_list(request):
 def process_list_partial(request):
     processes = get_processes()
     return render(request, "processes/process_table.html", {"processes": processes})
+
+
+def kill_process(request, pid):
+    if request.method == "POST":
+        try:
+            p = psutil.Process(pid)
+            p.terminate()
+        except psutil.NoSuchProcess:
+            pass
+    return HttpResponseRedirect(reverse("processes:process_list"))
