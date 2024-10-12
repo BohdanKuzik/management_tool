@@ -4,8 +4,39 @@
 {% block title %}Process Browser{% endblock %}
 
 {% block content %}
-<h1>Active Processes</h1>
-<div id="process-table" hx-get="{% url 'processes:process_list_partial' %}" hx-trigger="every 10s">
+
+  <div class="container">
+  <h1 class="text-center">Active Processes</h1>
+    <form method="POST" action="{% url 'processes:take_snapshot' %}" class="row g-3 justify-content-center align-items-center mt-5 text-center">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary">Take Snapshot</button>
+    </form>
+    <form method="GET" action="{% url 'processes:process_list' %}" class="row g-3 justify-content-center align-items-center mb-4 text-center">
+        <div class="col-md-3">
+            <label for="pid" class="form-label"></label>
+            <input type="text" id="pid" name="pid" value="{{ request.GET.pid }}" class="form-control" placeholder="Enter PID">
+        </div>
+
+        <div class="col-md-3">
+            <label for="status" class="form-label"></label>
+            <input type="text" id="status" name="status" value="{{ request.GET.status }}" class="form-control" placeholder="Enter Status">
+        </div>
+
+        <div class="col-md-3">
+            <label for="name" class="form-label"></label>
+            <input type="text" id="name" name="name" value="{{ request.GET.name }}" class="form-control" placeholder="Enter Name">
+        </div>
+
+        <div class="col-md-3">
+            <label for="name" class="form-label"></label>
+            <button type="submit" class="btn btn-primary w-100 form-control">Filter</button>
+        </div>
+    </form>
+    
+    <div id="process-table" hx-get="{% url 'processes:process_list_partial' %}" hx-trigger="every 30s" hx-swap="outerHTML">
     {% include 'processes/process_table.html' %}
+    </div>
+      
 </div>
+
 {% endblock content %}
