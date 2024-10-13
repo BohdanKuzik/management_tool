@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -93,14 +94,18 @@ class KillProcessView(View):
 @login_required
 def take_snapshot(request):
     if request.method == "POST":
-        processes = get_processes()
-        snapshot_data = json.dumps(processes)
+        try:
+            processes = get_processes()
+            snapshot_data = json.dumps(processes)
 
-        Snapshot.objects.create(
-            author=request.user,
-            process_data=snapshot_data,
-            timestamp=timezone.now()
-        )
+            Snapshot.objects.create(
+                author=request.user,
+                process_data=snapshot_data,
+                timestamp=timezone.now()
+            )
+            messages.success(request, "Знімок успішно створено!")
+        except Exception as e:
+            messages.error(request, "Помилка при створенні знімка: " + str(e))
 
         return redirect("processes:process_list")
 

@@ -34,7 +34,7 @@
     </form>
     
     <div id="process-table" hx-get="{% url 'processes:process_list_partial' %}" hx-trigger="every 30s" hx-swap="outerHTML">
-    {% include 'processes/process_table.html' %}
+      {% include 'processes/process_table.html' %}
     </div>
       
 </div>
