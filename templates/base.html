@@ -17,10 +17,11 @@
 
     <div class="main-container">
         <div class="content">
+          <a href="{%  url 'processes:register' %}">Sign up</a> | <a href="{% url 'processes:login' %}">Log in</a>
             {% block content %}
             {% endblock content %}
         </div>
     </div>
-    
+
 </body>
 </html>
