@@ -28,7 +28,7 @@
       <div class="d-flex justify-content-end align-items-center">
           {% if request.user.is_authenticated %}
               <span>{{ user.username }}</span>
-              <a href="{% url 'processes:logout' %}" class="btn btn-outline-danger ms-3" style="margin-left: 20px;">Logout</a>
+              <a href="{% url 'processes:logout' %}" class="btn btn-outline-danger ms-3" style="margin: 0 20px;">Logout</a>
           {% else %}
               <a href="{% url 'processes:register' %}" class="btn btn-outline-primary me-2">Sign up</a>
               <a href="{% url 'processes:login' %}" class="btn btn-outline-success" style="margin-right: 20px;">Login</a>

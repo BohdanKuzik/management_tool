@@ -47,7 +47,10 @@ def get_processes(pid_filter=None, status_filter=None, name_filter=None):
             if (
                 (pid_filter and str(proc.pid) != pid_filter)
                 or (status_filter and proc.status() != status_filter)
-                or (name_filter and name_filter.lower() not in proc.name().lower())
+                or (
+                    name_filter and name_filter.lower()
+                    not in proc.name().lower()
+                )
             ):
                 continue
 
@@ -59,11 +62,17 @@ def get_processes(pid_filter=None, status_filter=None, name_filter=None):
                         proc.create_time()
                     ).strftime("%Y-%m-%d %H:%M:%S"),
                     "name": proc.name(),
-                    "memory_usage": round(proc.memory_info().rss / (1024 * 1024), 4),
+                    "memory_usage": round(
+                        proc.memory_info().rss / (1024 * 1024), 4
+                    ),
                     "cpu_usage": proc.cpu_percent(interval=0),
                 }
             )
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+        except (
+                psutil.NoSuchProcess,
+                psutil.AccessDenied,
+                psutil.ZombieProcess
+        ) as e:
             logger.warning(f"Error while accessing process: {e}")
     return processes
 
@@ -88,19 +97,25 @@ class ProcessListView(ProcessListMixin, TemplateView):
     template_name = "processes/process_list.html"
 
 
-class ProcessListPartialView(LoginRequiredMixin, ProcessListMixin, TemplateView):
+class ProcessListPartialView(
+    LoginRequiredMixin,
+    ProcessListMixin,
+    TemplateView
+):
     template_name = "processes/process_table.html"
 
 
 class KillProcessView(View):
     def post(self, request, pid, *args, **kwargs):
         try:
-            p = psutil.Process(pid)
-            p.terminate()
+            process = psutil.Process(pid)
+            process.terminate()
         except psutil.NoSuchProcess:
             logger.warning(f"Process {pid} not found.")
         except psutil.AccessDenied:
-            logger.error(f"Access denied when trying to terminate process {pid}.")
+            logger.error(
+                f"Access denied when trying to terminate process {pid}."
+            )
         return redirect("processes:process_list")
 
 

@@ -1,38 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Snapshot Details</h1>
-<p><strong>Timestamp:</strong> {{ snapshot.timestamp|date:"M d, Y, P" }}</p>
-<p><strong>Author:</strong> {{ snapshot.author }}</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <h1 class="text-center">Snapshot Details</h1>
+            <p><strong>Timestamp:</strong> {{ snapshot.timestamp|date:"M d, Y, P" }}</p>
+            <p><strong>Author:</strong> {{ snapshot.author }}</p>
 
-<h2>Processes</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>PID</th>
-            <th>Status</th>
-            <th>Start Time</th>
-            <th>Name</th>
-            <th>Memory Usage (MB)</th>
-            <th>CPU Usage (%)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for process in process_data %}
-        <tr>
-            <td>{{ process.pid }}</td>
-            <td>{{ process.status }}</td>
-            <td>{{ process.start_time }}</td>
-            <td>{{ process.name }}</td>
-            <td>{{ process.memory_usage }}</td>
-            <td>{{ process.cpu_usage }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No processes found</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+            <h2 class="text-center">Processes</h2>
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>PID</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>Name</th>
+                        <th>Memory Usage (MB)</th>
+                        <th>CPU Usage (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in process_data %}
+                    <tr>
+                        <td>{{ process.pid }}</td>
+                        <td>{{ process.status }}</td>
+                        <td>{{ process.start_time }}</td>
+                        <td>{{ process.name }}</td>
+                        <td>{{ process.memory_usage }}</td>
+                        <td>{{ process.cpu_usage }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No processes found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

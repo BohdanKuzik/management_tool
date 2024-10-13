@@ -32,10 +32,22 @@
             <button type="submit" class="btn btn-primary w-100 form-control">Filter</button>
         </div>
     </form>
+     
     
-    <div id="process-table" hx-get="{% url 'processes:process_list_partial' %}" hx-trigger="every 30s" hx-swap="outerHTML">
-      {% include 'processes/process_table.html' %}
+<div id="process-table" 
+     hx-get="{% url 'processes:process_list_partial' %}" 
+     hx-trigger="load, every 30s" 
+     hx-swap="outerHTML" 
+     hx-indicator="#loading-indicator">
+    
+    {% include 'processes/process_table.html' %}
+    <br>
+    <br>
+    <br>
+    <div id="loading-indicator" class="loading-container">
+        <h2 class="text-center">Loading...</h2>
     </div>
+</div>
       
 </div>
 
