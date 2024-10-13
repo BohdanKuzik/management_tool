@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -6,17 +7,23 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse
+from django.shortcuts import (
+    redirect,
+    render,
+    get_object_or_404,
+)
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.shortcuts import redirect, render, get_object_or_404
-import psutil
-import logging
-
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, ListView
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    ListView,
+)
 from django.views.generic.base import ContextMixin
+
+import psutil
 
 from processes.forms import RegisterUserForm
 from processes.models import Snapshot
@@ -26,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
-    return render(request, 'processes/process_list.html')
+    return render(request, "processes/process_list.html")
 
 
 def get_processes(pid_filter=None, status_filter=None, name_filter=None):
@@ -37,19 +44,25 @@ def get_processes(pid_filter=None, status_filter=None, name_filter=None):
             if proc.pid == 0:
                 continue
 
-            if (pid_filter and str(proc.pid) != pid_filter) or \
-               (status_filter and proc.status() != status_filter) or \
-               (name_filter and name_filter.lower() not in proc.name().lower()):
+            if (
+                (pid_filter and str(proc.pid) != pid_filter)
+                or (status_filter and proc.status() != status_filter)
+                or (name_filter and name_filter.lower() not in proc.name().lower())
+            ):
                 continue
 
-            processes.append({
-                "pid": proc.pid,
-                "status": proc.status(),
-                "start_time": timezone.datetime.fromtimestamp(proc.create_time()).strftime("%Y-%m-%d %H:%M:%S"),
-                "name": proc.name(),
-                "memory_usage": round(proc.memory_info().rss / (1024 * 1024), 4),
-                "cpu_usage": proc.cpu_percent(interval=0),
-            })
+            processes.append(
+                {
+                    "pid": proc.pid,
+                    "status": proc.status(),
+                    "start_time": timezone.datetime.fromtimestamp(
+                        proc.create_time()
+                    ).strftime("%Y-%m-%d %H:%M:%S"),
+                    "name": proc.name(),
+                    "memory_usage": round(proc.memory_info().rss / (1024 * 1024), 4),
+                    "cpu_usage": proc.cpu_percent(interval=0),
+                }
+            )
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
             logger.warning(f"Error while accessing process: {e}")
     return processes
@@ -70,7 +83,7 @@ class ProcessListMixin(ContextMixin, View):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class ProcessListView(ProcessListMixin, TemplateView):
     template_name = "processes/process_list.html"
 
@@ -101,11 +114,11 @@ def take_snapshot(request):
             Snapshot.objects.create(
                 author=request.user,
                 process_data=snapshot_data,
-                timestamp=timezone.now()
+                timestamp=timezone.now(),
             )
-            messages.success(request, "Знімок успішно створено!")
+            messages.success(request, "Snapshot successfully created!")
         except Exception as e:
-            messages.error(request, "Помилка при створенні знімка: " + str(e))
+            messages.error(request, "Error while creating snapshot: " + str(e))
 
         return redirect("processes:process_list")
 
@@ -141,7 +154,7 @@ class SnapshotListView(LoginRequiredMixin, ListView):
     model = Snapshot
     template_name = "processes/snapshot_list.html"
     context_object_name = "snapshots"
-    ordering = ['-timestamp']
+    ordering = ["-timestamp"]
 
 
 @login_required
@@ -150,9 +163,8 @@ def snapshot_details(request, pk):
     process_data = json.loads(snapshot.process_data)
 
     context = {
-        'snapshot': snapshot,
-        'process_data': process_data,
+        "snapshot": snapshot,
+        "process_data": process_data,
     }
 
-    return render(request, 'processes/snapshot_detail.html', context)
-
+    return render(request, "processes/snapshot_detail.html", context)
