@@ -41,4 +41,9 @@ python manage.py createsuperuser #if you want to have more permissions
 python manage.py runserver
 ```
 
-After running that code you'll be able to browse the website locally on your computer.
+After running that code you'll be able to browse the website locally on your computer
+
+All data reload automatically every 30 seconds.<br>
+After clicking button: "take snapshot" you need to wait a few seconds :)
+
+
