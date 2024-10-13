@@ -9,6 +9,8 @@ from processes.views import (
     RegisterUser,
     LoginUser,
     logout_user,
+    SnapshotListView,
+    snapshot_details,
 )
 
 
@@ -20,7 +22,9 @@ urlpatterns = [
     path("processes/take_snapshot/", take_snapshot, name="take_snapshot"),
     path("login/", LoginUser.as_view(), name="login"),
     path("logout/", logout_user, name="logout"),
-    path("register/", RegisterUser.as_view(), name="register")
+    path("register/", RegisterUser.as_view(), name="register"),
+    path("snapshots/", SnapshotListView.as_view(), name="snapshot_list"),
+    path("snapshots/<int:pk>/", snapshot_details, name="snapshot_detail"),
 ]
 
 app_name = "processes"

@@ -8,13 +8,13 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 import psutil
 import logging
 
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, DetailView, ListView
 from django.views.generic.base import ContextMixin
 
 from processes.forms import RegisterUserForm
@@ -130,3 +130,24 @@ class LoginUser(LoginView):
 def logout_user(request):
     logout(request)
     return redirect("processes:login")
+
+
+class SnapshotListView(LoginRequiredMixin, ListView):
+    model = Snapshot
+    template_name = "processes/snapshot_list.html"
+    context_object_name = "snapshots"
+    ordering = ['-timestamp']
+
+
+@login_required
+def snapshot_details(request, pk):
+    snapshot = get_object_or_404(Snapshot, id=pk)
+    process_data = json.loads(snapshot.process_data)
+
+    context = {
+        'snapshot': snapshot,
+        'process_data': process_data,
+    }
+
+    return render(request, 'processes/snapshot_detail.html', context)
+
