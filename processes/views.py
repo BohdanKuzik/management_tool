@@ -1,6 +1,9 @@
 import json
 
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -9,6 +12,7 @@ from django.shortcuts import redirect, render
 import psutil
 import logging
 
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.views.generic.base import ContextMixin
@@ -19,6 +23,7 @@ from processes.models import Snapshot
 logger = logging.getLogger(__name__)
 
 
+@login_required
 def index(request):
     return render(request, 'processes/process_list.html')
 
@@ -64,11 +69,12 @@ class ProcessListMixin(ContextMixin, View):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class ProcessListView(ProcessListMixin, TemplateView):
     template_name = "processes/process_list.html"
 
 
-class ProcessListPartialView(ProcessListMixin, TemplateView):
+class ProcessListPartialView(LoginRequiredMixin, ProcessListMixin, TemplateView):
     template_name = "processes/process_table.html"
 
 
@@ -84,6 +90,7 @@ class KillProcessView(View):
         return redirect("processes:process_list")
 
 
+@login_required
 def take_snapshot(request):
     if request.method == "POST":
         processes = get_processes()
@@ -118,3 +125,8 @@ class LoginUser(LoginView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Login"
         return context
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("processes:login")

@@ -8,6 +8,7 @@ from processes.views import (
     take_snapshot,
     RegisterUser,
     LoginUser,
+    logout_user,
 )
 
 
@@ -18,6 +19,7 @@ urlpatterns = [
     path("processes/kill/<int:pid>/", KillProcessView.as_view(), name="kill_process"),
     path("processes/take_snapshot/", take_snapshot, name="take_snapshot"),
     path("login/", LoginUser.as_view(), name="login"),
+    path("logout/", logout_user, name="logout"),
     path("register/", RegisterUser.as_view(), name="register")
 ]
 

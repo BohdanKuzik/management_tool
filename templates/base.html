@@ -14,14 +14,23 @@
     {% endblock extra_css %}
 </head>
 <body>
+<div class="main-container">
+    <div class="content d-flex justify-content-end mt-3">
+      {% if request.user.is_authenticated %}
+        <div class="d-flex justify-content-end align-items-center" style="margin-right: 20px;">
+    <span>{{ user.username }}</span>
+    <a href="{% url 'processes:logout' %}" class="btn btn-outline-danger ms-3">Logout</a>
+</div>
 
-    <div class="main-container">
-        <div class="content">
-          <a href="{%  url 'processes:register' %}">Sign up</a> | <a href="{% url 'processes:login' %}">Log in</a>
-            {% block content %}
-            {% endblock content %}
-        </div>
+      {% else %}
+        <a href="{% url 'processes:register' %}" class="btn btn-outline-primary me-2">Sign up</a>
+        <a href="{% url 'processes:login' %}" class="btn btn-outline-success" style="margin-right: 20px;">Login</a>
+      {% endif %}
     </div>
+    {% block content %}
+    {% endblock content %}
+</div>
+
 
 </body>
 </html>
