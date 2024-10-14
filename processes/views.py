@@ -1,7 +1,11 @@
 import json
 import logging
 
-from typing import Any, Dict, List
+from typing import (
+    Any,
+    Dict,
+    List,
+)
 
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -38,7 +42,12 @@ def index(request) -> Any:
     return render(request, "processes/process_list.html")
 
 
-def filter_processes(proc, pid_filter=None, status_filter=None, name_filter=None) -> bool:
+def filter_processes(
+        proc,
+        pid_filter=None,
+        status_filter=None,
+        name_filter=None
+) -> bool:
     if pid_filter and str(proc.pid) != pid_filter:
         return False
     if status_filter and proc.status() != status_filter:
@@ -53,8 +62,8 @@ def format_process_data(proc) -> Dict[str, Any]:
         "pid": proc.pid,
         "status": proc.status(),
         "start_time": timezone.datetime.fromtimestamp(
-            proc.create_time()).strftime("%Y-%m-%d %H:%M:%S"
-        ),
+            proc.create_time()
+        ).strftime("%Y-%m-%d %H:%M:%S"),
         "name": proc.name(),
         "memory_usage": round(
             proc.memory_info().rss / (1024 * 1024), 4
@@ -63,14 +72,24 @@ def format_process_data(proc) -> Dict[str, Any]:
     }
 
 
-def get_processes(pid_filter=None, status_filter=None, name_filter=None) -> List[Dict[str, Any]]:
+def get_processes(
+        pid_filter=None,
+        status_filter=None,
+        name_filter=None
+) -> List[Dict[str, Any]]:
     processes = []
+
     for proc in psutil.process_iter(["pid", "status", "name"]):
         try:
             if proc.pid == 0:
                 continue
 
-            if not filter_processes(proc, pid_filter, status_filter, name_filter):
+            if not filter_processes(
+                    proc,
+                    pid_filter,
+                    status_filter,
+                    name_filter
+            ):
                 continue
 
             processes.append(format_process_data(proc))
