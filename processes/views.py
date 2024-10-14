@@ -8,30 +8,24 @@ from typing import (
 )
 
 from django.contrib import messages
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
 from django.shortcuts import (
     redirect,
     render,
     get_object_or_404,
 )
-from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import (
     TemplateView,
-    CreateView,
     ListView,
 )
 from django.views.generic.base import ContextMixin
 
 import psutil
 
-from processes.forms import RegisterUserForm
 from processes.models import Snapshot
 
 logger = logging.getLogger(__name__)
@@ -161,33 +155,6 @@ def take_snapshot(request) -> Any:
             messages.error(request, "Error while creating snapshot: " + str(e))
 
         return redirect("processes:process_list")
-
-
-class RegisterUser(CreateView):
-    form_class = RegisterUserForm
-    template_name = "processes/register.html"
-    success_url = reverse_lazy("processes:login")
-
-    def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Sign up"
-        return context
-
-
-class LoginUser(LoginView):
-    form_class = AuthenticationForm
-    template_name = "processes/login.html"
-    success_url = reverse_lazy("processes:login")
-
-    def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Login"
-        return context
-
-
-def logout_user(request) -> Any:
-    logout(request)
-    return redirect("processes:login")
 
 
 class SnapshotListView(LoginRequiredMixin, ListView):
