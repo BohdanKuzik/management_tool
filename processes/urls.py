@@ -1,15 +1,17 @@
 from django.urls import path
 
+from processes.auth_user import (
+    LoginUser,
+    logout_user,
+    RegisterUser,
+)
 from processes.views import (
     index,
     take_snapshot,
-    logout_user,
     snapshot_details,
     ProcessListView,
     ProcessListPartialView,
     KillProcessView,
-    RegisterUser,
-    LoginUser,
     SnapshotListView,
 )
 
