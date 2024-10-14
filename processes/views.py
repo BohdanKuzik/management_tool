@@ -1,6 +1,8 @@
 import json
 import logging
 
+from typing import Any, Dict, List
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -32,42 +34,46 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-def index(request):
+def index(request) -> Any:
     return render(request, "processes/process_list.html")
 
 
-def get_processes(pid_filter=None, status_filter=None, name_filter=None):
+def filter_processes(proc, pid_filter=None, status_filter=None, name_filter=None) -> bool:
+    if pid_filter and str(proc.pid) != pid_filter:
+        return False
+    if status_filter and proc.status() != status_filter:
+        return False
+    if name_filter and name_filter.lower() not in proc.name().lower():
+        return False
+    return True
+
+
+def format_process_data(proc) -> Dict[str, Any]:
+    return {
+        "pid": proc.pid,
+        "status": proc.status(),
+        "start_time": timezone.datetime.fromtimestamp(
+            proc.create_time()).strftime("%Y-%m-%d %H:%M:%S"
+        ),
+        "name": proc.name(),
+        "memory_usage": round(
+            proc.memory_info().rss / (1024 * 1024), 4
+        ),
+        "cpu_usage": proc.cpu_percent(interval=0),
+    }
+
+
+def get_processes(pid_filter=None, status_filter=None, name_filter=None) -> List[Dict[str, Any]]:
     processes = []
     for proc in psutil.process_iter(["pid", "status", "name"]):
         try:
-
             if proc.pid == 0:
                 continue
 
-            if (
-                (pid_filter and str(proc.pid) != pid_filter)
-                or (status_filter and proc.status() != status_filter)
-                or (
-                    name_filter and name_filter.lower()
-                    not in proc.name().lower()
-                )
-            ):
+            if not filter_processes(proc, pid_filter, status_filter, name_filter):
                 continue
 
-            processes.append(
-                {
-                    "pid": proc.pid,
-                    "status": proc.status(),
-                    "start_time": timezone.datetime.fromtimestamp(
-                        proc.create_time()
-                    ).strftime("%Y-%m-%d %H:%M:%S"),
-                    "name": proc.name(),
-                    "memory_usage": round(
-                        proc.memory_info().rss / (1024 * 1024), 4
-                    ),
-                    "cpu_usage": proc.cpu_percent(interval=0),
-                }
-            )
+            processes.append(format_process_data(proc))
         except (
                 psutil.NoSuchProcess,
                 psutil.AccessDenied,
@@ -78,7 +84,7 @@ def get_processes(pid_filter=None, status_filter=None, name_filter=None):
 
 
 class ProcessListMixin(ContextMixin, View):
-    def get_filtered_processes(self):
+    def get_filtered_processes(self) -> List[Dict[str, Any]]:
         pid_filter = self.request.GET.get("pid")
         status_filter = self.request.GET.get("status")
         name_filter = self.request.GET.get("name")
@@ -86,7 +92,7 @@ class ProcessListMixin(ContextMixin, View):
         processes = get_processes(pid_filter, status_filter, name_filter)
         return processes
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["processes"] = self.get_filtered_processes()
         return context
@@ -106,7 +112,7 @@ class ProcessListPartialView(
 
 
 class KillProcessView(View):
-    def post(self, request, pid, *args, **kwargs):
+    def post(self, request, pid, *args, **kwargs) -> Any:
         try:
             process = psutil.Process(pid)
             process.terminate()
@@ -120,7 +126,7 @@ class KillProcessView(View):
 
 
 @login_required
-def take_snapshot(request):
+def take_snapshot(request) -> Any:
     if request.method == "POST":
         try:
             processes = get_processes()
@@ -143,7 +149,7 @@ class RegisterUser(CreateView):
     template_name = "processes/register.html"
     success_url = reverse_lazy("processes:login")
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["title"] = "Sign up"
         return context
@@ -154,13 +160,13 @@ class LoginUser(LoginView):
     template_name = "processes/login.html"
     success_url = reverse_lazy("processes:login")
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["title"] = "Login"
         return context
 
 
-def logout_user(request):
+def logout_user(request) -> Any:
     logout(request)
     return redirect("processes:login")
 
@@ -173,7 +179,7 @@ class SnapshotListView(LoginRequiredMixin, ListView):
 
 
 @login_required
-def snapshot_details(request, pk):
+def snapshot_details(request, pk) -> Any:
     snapshot = get_object_or_404(Snapshot, id=pk)
     process_data = json.loads(snapshot.process_data)
 
