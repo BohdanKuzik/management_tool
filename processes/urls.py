@@ -5,13 +5,15 @@ from processes.auth_user import (
     logout_user,
     RegisterUser,
 )
-from processes.views import (
+from processes.views.process_views import (
     index,
-    take_snapshot,
-    snapshot_details,
     ProcessListView,
     ProcessListPartialView,
     KillProcessView,
+)
+from processes.views.snapshot_views import (
+    take_snapshot,
+    snapshot_details,
     SnapshotListView,
 )
 
