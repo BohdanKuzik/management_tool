@@ -3,7 +3,7 @@
 Management tool using a Python web framework Django, that allows remote monitoring and control of processes running on the machine where the application is deployed
 
 ## Demo
-![Website Interface](demo.png)
+![Website Interface](demo1.png)
 
 
 ### Features

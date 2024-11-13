@@ -4,18 +4,16 @@ from typing import (
     List,
 )
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from django.views.generic.base import ContextMixin, View
+from django.views.generic.base import View
 
 from processes.managers import ProcessManager
 
 
-class ProcessListMixin(ContextMixin, View):
+class ProcessListMixin(TemplateView):
     def get_filtered_processes(self) -> List[Dict[str, Any]]:
         pid_filter = self.request.GET.get("pid")
         status_filter = self.request.GET.get("status")
@@ -34,15 +32,13 @@ class ProcessListMixin(ContextMixin, View):
         return context
 
 
-@method_decorator(login_required, name="dispatch")
-class ProcessListView(ProcessListMixin, TemplateView):
+class ProcessListView(LoginRequiredMixin, ProcessListMixin):
     template_name = "processes/process_list.html"
 
 
 class ProcessListPartialView(
     LoginRequiredMixin,
-    ProcessListMixin,
-    TemplateView
+    ProcessListMixin
 ):
     template_name = "processes/process_table.html"
 
