@@ -6,7 +6,6 @@ from processes.auth_user import (
     RegisterUser,
 )
 from processes.views.process_views import (
-    index,
     ProcessListView,
     ProcessListPartialView,
     KillProcessView,
@@ -19,9 +18,8 @@ from processes.views.snapshot_views import (
 
 
 urlpatterns = [
-    path("", index, name="index"),
     path(
-        "processes/",
+        "",
         ProcessListView.as_view(),
         name="process_list"
     ),
