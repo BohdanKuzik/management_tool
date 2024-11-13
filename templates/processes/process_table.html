@@ -1,31 +1,31 @@
-<table class="process-table">
-  <thead>
-  <tr>
-    <th>PID</th>
-    <th>Status</th>
-    <th>Start Time</th>
-    <th>Name</th>
-    <th>Memory Usage (MB)</th>
-    <th>CPU Usage (%)</th>
-    <th>Kill Process</th>
-  </tr>
+<table class="table table-hover table-bordered mt-4">
+  <thead class="table-grey">
+    <tr>
+      <th scope="col">PID</th>
+      <th scope="col">Status</th>
+      <th scope="col">Start Time</th>
+      <th scope="col">Name</th>
+      <th scope="col">Memory Usage (MB)</th>
+      <th scope="col">CPU Usage (%)</th>
+      <th scope="col">Kill Process</th>
+    </tr>
   </thead>
   <tbody>
-  {% for process in processes %}
-    <tr>
-      <td>{{ process.pid }}</td>
-      <td>{{ process.status }}</td>
-      <td>{{ process.start_time }}</td>
-      <td>{{ process.name }}</td>
-      <td>{{ process.memory_usage }}</td>
-      <td>{{ process.cpu_usage }}</td>
-      <td>
-        <form action="{% url 'processes:kill_process' pid=process.pid %}" method="POST">
-          {% csrf_token %}
-          <button type="submit">Kill Process</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
+    {% for process in processes %}
+      <tr>
+        <td>{{ process.pid }}</td>
+        <td>{{ process.status }}</td>
+        <td>{{ process.start_time }}</td>
+        <td>{{ process.name }}</td>
+        <td>{{ process.memory_usage }}</td>
+        <td>{{ process.cpu_usage }}</td>
+        <td>
+          <form action="{% url 'processes:kill_process' pid=process.pid %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Kill Process</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
   </tbody>
 </table>

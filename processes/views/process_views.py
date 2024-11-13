@@ -15,11 +15,6 @@ from django.views.generic.base import ContextMixin, View
 from processes.managers import ProcessManager
 
 
-@login_required
-def index(request) -> Any:
-    return render(request, "processes/process_list.html")
-
-
 class ProcessListMixin(ContextMixin, View):
     def get_filtered_processes(self) -> List[Dict[str, Any]]:
         pid_filter = self.request.GET.get("pid")
