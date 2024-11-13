@@ -9,12 +9,12 @@ class TestIndexView(TestCase):
 
     def test_index_view_with_authenticated_user(self):
         self.client.login(username="testuser", password="testpass")
-        response = self.client.get(reverse("processes:index"))
+        response = self.client.get(reverse("processes:process_list"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "processes/process_list.html")
 
     def test_index_view_with_anonymous_user(self):
-        response = self.client.get(reverse("processes:index"))
+        response = self.client.get(reverse("processes:process_list"))
         self.assertEqual(response.status_code, 302)
-        login_url = reverse("processes:login") + "?next=" + reverse("processes:index")
+        login_url = reverse("processes:login") + "?next=" + reverse("processes:process_list")
         self.assertRedirects(response, login_url)
